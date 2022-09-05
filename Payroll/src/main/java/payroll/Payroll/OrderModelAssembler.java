@@ -1,7 +1,8 @@
 package payroll.Payroll;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+import java.util.List;
 
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
@@ -21,10 +22,17 @@ class OrderModelAssembler implements RepresentationModelAssembler<Order, EntityM
     // Conditional links based on state of the order
 
     if (order.getStatus() == Status.IN_PROGRESS) {
-      orderModel.add(linkTo(methodOn(OrderController.class).cancel(order.getId())).withRel("cancel"));
-      orderModel.add(linkTo(methodOn(OrderController.class).complete(order.getId())).withRel("complete"));
+      orderModel.add(linkTo(methodOn(OrderController.class).
+    		  cancel(order.getId())).withRel("cancel"));
+      orderModel.add(linkTo(methodOn(OrderController.class).
+    		  complete(order.getId())).withRel("complete"));
     }
 
     return orderModel;
   }
+  public CollectionModel<EntityModel<Order>> toCollectionModel(
+		  List<EntityModel<Order>> orders)  {
+	  return CollectionModel.of(orders, 
+			  linkTo(methodOn(OrderController.class).all()).withSelfRel());
+	}
 }
